@@ -1,0 +1,57 @@
+# -------------------------
+# Global
+# -------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+logs
+*.log
+*.log.*
+*.out
+*.pid
+*.seed
+*.pid.lock
+
+# Environment files
+.env
+.env.*.local
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# -------------------------
+# Frontend (React)
+# -------------------------
+client/build/
+client/.cache/
+client/dist/
+client/coverage/
+
+# -------------------------
+# Backend (Node)
+# -------------------------
+server/dist/
+server/build/
+server/coverage/
+
+# -------------------------
+# Misc
+# -------------------------
+*.gz
+*.tgz
