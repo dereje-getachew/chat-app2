@@ -17,8 +17,7 @@ password:{
         required:true,
     },
     profilePicture:{
-        type:String,
-        default:"https://res.cloudinary.com/dxamis0qy/image/upload/v1709300000/default-profile-picture.png",
+        type:String
     },
     createdAt:{
         type:Date,

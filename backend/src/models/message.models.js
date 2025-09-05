@@ -7,7 +7,7 @@ const messageSchema= new mongoose.Schema(
             ref:"User",
             required:true
         },
-        recieverId:
+        receiverId:
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:"User",
@@ -17,7 +17,8 @@ const messageSchema= new mongoose.Schema(
             type:String
         },
         image:{
-           type:String
+           type:String,
+           default:""
         }
     },
     {
@@ -25,5 +26,6 @@ const messageSchema= new mongoose.Schema(
     }
 
 );
+
 const message =mongoose.model("message",messageSchema);
 export default message;

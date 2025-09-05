@@ -1,6 +1,8 @@
 import express from "express";import { get } from "mongoose";
-import User from "../models/User";
-import message from "../models/message.models";
+import User from "../models/User.js";
+import message from "../models/message.models.js";
+import cloudinary from "../lib/cloudinary.js";
+import { io, getReceiverSocketId } from "../lib/socket.js";
 
 
 export const getUserSidebar = async (req, res) => {
@@ -18,7 +20,7 @@ export const getUserSidebar = async (req, res) => {
 
 export const getmessages = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const { id: userId } = req.params;
         const loggedInUserId = req.user._id; // Assuming req.user is set by the protectedRoute middleware
 
         if (!userId) {
@@ -27,8 +29,8 @@ export const getmessages = async (req, res) => {
 
         const messages = await message.find({
             $or: [
-                { senderId: loggedInUserId, recieverId: userId },
-                { senderId: userId, recieverId: loggedInUserId }
+                { senderId: loggedInUserId, receiverId: userId },
+                { senderId: userId, receiverId: loggedInUserId }
             ]
         }).sort({ createdAt: 1 });
 
@@ -41,9 +43,14 @@ export const getmessages = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     try {
-        const {text,image} = req.body;
-        const senderId = req.user._id; // Assuming req.user is set by the protectedRoute middleware
-        const receiverId = req.params.id;   
+        const {text, image} = req.body;
+        const senderId = req.user._id;
+        const receiverId = req.params.id;
+
+        if (!receiverId || receiverId === "undefined") {
+            return res.status(400).json({ message: "Receiver ID is required and must be valid" });
+        }
+
         if (!text && !image) {
             return res.status(400).json({ message: "Message text or image is required" });
         }
@@ -56,11 +63,15 @@ export const sendMessage = async (req, res) => {
         const newMessage = new message({
             senderId,
             receiverId,
-            message: text,
+            text,
             image: imageUrl
         });
 
         await newMessage.save();
+        const recieverSocketId = getReceiverSocketId(receiverId);
+        if (recieverSocketId) {
+            io.to(recieverSocketId).emit("newMessage", newMessage);
+        }
 
         res.status(201).json(newMessage);
     } catch (error) {
